@@ -485,6 +485,23 @@ class MainWindow(QMainWindow):
         play_stop_layout.addWidget(self.btn_play_stop)
         ctrl.addLayout(play_stop_layout)
 
+        self.audio_progress = QProgressBar()
+        self.audio_progress.setRange(0, 1000)
+        self.audio_progress.setTextVisible(False)
+        self.audio_progress.setFixedHeight(6)
+        self.audio_progress.setStyleSheet("""
+            QProgressBar {
+                background: #333;
+                border-radius: 3px;
+            }
+            QProgressBar::chunk {
+                background: #2ecc71;
+                border-radius: 3px;
+            }
+        """)
+        ctrl.addWidget(self.audio_progress)
+
+
 
         self.lbl_time = QLabel("00:00")
         ctrl.addWidget(self.lbl_time)
@@ -549,6 +566,7 @@ class MainWindow(QMainWindow):
             self.is_playing = False
             self.timer.stop()
             self.btn_play_stop.setText("▶")
+            self.audio_progress.setValue(int((self.audio_player.pause_time / (self.total_frames / self.fps)) * 1000) if self.audio_player and self.total_frames else 0)
 
     def load_audio(self):
         fname, _ = QFileDialog.getOpenFileName(self, 'Open Audio', filter='WAV (*.wav)')
@@ -622,6 +640,15 @@ class MainWindow(QMainWindow):
         if self.video_handler.is_video:
             frame = self.video_handler.get_frame(t)
             self.glw.update_texture(frame)
+
+        if self.audio_player:
+            t = self.audio_player.get_current_time()
+            duration = self.total_frames / self.fps if self.total_frames else 1.0
+            progress = int((t / duration) * 1000)
+            self.audio_progress.setValue(min(progress, 1000))
+        else:
+            self.audio_progress.setValue(0)
+
 
     def closeEvent(self, event):
         if self.audio_player: self.audio_player.stop()
