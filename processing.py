@@ -96,7 +96,7 @@ class RealTimeAudioPlayer(QThread):
             channels_used = (order + 1) ** 2
             
             # 2. Inicjalizacja Matematyki
-            sampling = pf.samplings.sph_equal_area(self.n_points_viz)
+            sampling = pf.samplings.sph_equal_area(self.n_points_viz, radius=5.0)
             xyz_coords = sampling.cartesian # Oryginał: [X, Y, Z] gdzie Z to góra
             sph_coords = np.column_stack((sampling.azimuth, sampling.elevation, sampling.radius))
             

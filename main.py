@@ -191,6 +191,12 @@ class MainWindow(QMainWindow):
                 
                 # Ustawienia początkowe
                 self.player.set_gain(self.slider_volume.value())
+                
+                # --- KLUCZOWA POPRAWKA: Synchronizacja kąta przy starcie ---
+                # Pobieramy aktualny kąt z widgetu graficznego i wysyłamy do audio
+                # zanim zacznie grać. Dzięki temu audio "wie", gdzie patrzysz.
+                self.player.set_view_rotation(self.glw.yaw, self.glw.pitch)
+                
                 self.player.start()
             else:
                 self.player.resume()
